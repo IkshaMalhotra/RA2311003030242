@@ -1,46 +1,36 @@
-const expressLib = require("express");
-const loggerFunction = require("./logger");
+const express = require("express");
+const log = require("./logger");
 
-const serverApp = expressLib();
+const app = express();
+app.use(express.json());
 
-serverApp.use(expressLib.json());
-console.log("Initialising backend server");
+app.get("/", async (req, res) => {
+  await log("backend", "info", "route", "home route hit");
 
-serverApp.get("/", async (req, res) => {
-  const logmessage = "Received homepage request";
-
-  await loggerFunction("backend", "info", "route", logmessage);
-
-  res.status(200).json({
+  res.json({
     status: "ok",
     message: "Server is running"
   });
 });
 
-serverApp.get("/error", async (req, res) => {
-  const errormsg = "Received error request";
+app.get("/error", async (req, res) => {
+  await log("backend", "error", "handler", "error route accessed");
 
-  await loggerFunction("backend", "error", "handler", errormsg);
-
-  res.status(200).json({
+  res.json({
     success: false,
     info: "Error route"
   });
 });
 
-serverApp.get("/debug", async (req, res) => {
-  const debugmsg = "API call for debugging";
+app.get("/debug", async (req, res) => {
+  await log("backend", "debug", "service", "debug route called");
 
-  await loggerFunction("backend", "debug", "service", debugmsg);
-
-  res.status(200).json({
+  res.json({
     message: "Debug data processed",
     status: "success"
   });
 });
 
-const port = 3000;
-
-serverApp.listen(port, () => {
-  console.log("server live on port:", port);
+app.listen(3000, async () => {
+  await log("backend", "info", "service", "server started");
 });
